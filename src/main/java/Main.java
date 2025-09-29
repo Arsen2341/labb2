@@ -1,61 +1,55 @@
-package mainapp;
-
-import entities.Student;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+        Student[] students = new Student[10];
 
-        System.out.print("Введіть кількість студентів: ");
-        int n = sc.nextInt();
-        sc.nextLine();
+        try {
+            File file = new File("src/students.txt");
+            System.out.println("Шукаю файл за шляхом: " + file.getAbsolutePath());
+            Scanner fileScanner = new Scanner(file, "UTF-8");
 
-        Student[] students = new Student[n];
+            int i = 0;
+            while (fileScanner.hasNextLine() && i < 10) {
+                String lastName = fileScanner.nextLine();
+                String firstName = fileScanner.nextLine();
+                String middleName = fileScanner.nextLine();
 
-        // Введення студентів
-        for (int i = 0; i < n; i++) {
-            System.out.println("\nСтудент " + (i + 1) + ":");
-            System.out.print("Прізвище: ");
-            String lastName = sc.nextLine();
-            System.out.print("Ім'я: ");
-            String firstName = sc.nextLine();
-            System.out.print("По батькові: ");
-            String middleName = sc.nextLine();
+                int year = Integer.parseInt(fileScanner.nextLine());
+                int month = Integer.parseInt(fileScanner.nextLine());
+                int day = Integer.parseInt(fileScanner.nextLine());
+                LocalDate birthDate = LocalDate.of(year, month, day);
 
-            System.out.print("Рік народження: ");
-            int year = sc.nextInt();
-            System.out.print("Місяць: ");
-            int month = sc.nextInt();
-            System.out.print("День: ");
-            int day = sc.nextInt();
-            sc.nextLine();
+                String address = fileScanner.nextLine();
+                String phone = fileScanner.nextLine();
+                String faculty = fileScanner.nextLine();
+                int course = Integer.parseInt(fileScanner.nextLine());
+                String group = fileScanner.nextLine();
 
-            LocalDate birthDate = LocalDate.of(year, month, day);
+                students[i] = new Student(i + 1, lastName, firstName, middleName,
+                        birthDate, address, phone, faculty, course, group);
+                i++;
+            }
 
-            System.out.print("Адреса: ");
-            String address = sc.nextLine();
-            System.out.print("Телефон: ");
-            String phone = sc.nextLine();
-            System.out.print("Факультет: ");
-            String faculty = sc.nextLine();
-            System.out.print("Курс: ");
-            int course = sc.nextInt();
-            sc.nextLine();
-            System.out.print("Група: ");
-            String group = sc.nextLine();
+            fileScanner.close();
+            System.out.println("Дані успішно зчитано з файлу!");
 
-            students[i] = new Student(i + 1, lastName, firstName, middleName,
-                    birthDate, address, phone, faculty, course, group);
+        } catch (FileNotFoundException e) {
+            System.out.println("Файл students.txt не знайдено!");
+            return;
         }
 
+        Scanner sc = new Scanner(System.in);
         int choice;
+
         do {
             System.out.println("\n--- МЕНЮ ---");
             System.out.println("1. Список студентів заданого факультету");
-            System.out.println("2. Список студентів, які народились після року");
-            System.out.println("3. Список студентів заданої групи");
+            System.out.println("2. Список студентів, які народились після заданого року");
+            System.out.println("3. Список навчальної групи");
             System.out.println("0. Вихід");
             System.out.print("Ваш вибір: ");
             choice = sc.nextInt();
@@ -65,10 +59,16 @@ public class Main {
                 case 1:
                     System.out.print("Введіть факультет: ");
                     String fac = sc.nextLine();
+                    System.out.println("Студенти факультету " + fac + ":");
+                    boolean found1 = false;
                     for (Student s : students) {
                         if (s.getFaculty().equalsIgnoreCase(fac)) {
                             System.out.println(s);
+                            found1 = true;
                         }
+                    }
+                    if (!found1) {
+                        System.out.println("Студентів з такого факультету не знайдено.");
                     }
                     break;
 
@@ -76,20 +76,32 @@ public class Main {
                     System.out.print("Введіть рік: ");
                     int y = sc.nextInt();
                     sc.nextLine();
+                    System.out.println("Студенти, які народились після " + y + " року:");
+                    boolean found2 = false;
                     for (Student s : students) {
                         if (s.getBirthDate().getYear() > y) {
                             System.out.println(s);
+                            found2 = true;
                         }
+                    }
+                    if (!found2) {
+                        System.out.println("Студентів, які народились після " + y + " року, не знайдено.");
                     }
                     break;
 
                 case 3:
                     System.out.print("Введіть групу: ");
                     String g = sc.nextLine();
+                    System.out.println("Студенти групи " + g + ":");
+                    boolean found3 = false;
                     for (Student s : students) {
                         if (s.getGroup().equalsIgnoreCase(g)) {
                             System.out.println(s);
+                            found3 = true;
                         }
+                    }
+                    if (!found3) {
+                        System.out.println("Студентів з такої групи не знайдено.");
                     }
                     break;
 
@@ -101,5 +113,7 @@ public class Main {
                     System.out.println("Невірний вибір!");
             }
         } while (choice != 0);
+
+        sc.close();
     }
 }

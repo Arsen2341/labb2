@@ -1,5 +1,3 @@
-package entities;
-
 import java.time.LocalDate;
 
 public class Student {
@@ -13,7 +11,6 @@ public class Student {
     private String faculty;
     private int course;
     private String group;
-
     public Student(int id, String lastName, String firstName, String middleName,
                    LocalDate birthDate, String address, String phone,
                    String faculty, int course, String group) {
